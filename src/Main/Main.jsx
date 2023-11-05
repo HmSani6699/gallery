@@ -22,7 +22,7 @@ const Main = () => {
         {/* Header div start */}
         <div className="flex items-center justify-between px-2">
           <h2 className="text-2xl font-bold ">Gallery Master</h2>
-          <button className="text-red-600 font-semibold">Delete Image</button>
+          <button className="text-red-600 font-semibold ">Delete Image</button>
         </div>
         {/* Header div end */}
       </div>
