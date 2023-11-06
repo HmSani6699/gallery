@@ -12,6 +12,8 @@ import image8 from "../../public/images/image-8.webp";
 import image9 from "../../public/images/image-9.webp";
 import image10 from "../../public/images/image-10.jpeg";
 import image11 from "../../public/images/image-11.jpeg";
+import success from "../../public/images/success.svg";
+import gallery from "../../public/images/gallery.svg";
 // Card import end //
 
 // React Dnd kit import start //
@@ -31,6 +33,8 @@ import {
 } from "@dnd-kit/sortable";
 import Card from "./Card/Card";
 import Item from "../Component/Item";
+import Swal from "sweetalert2";
+import { ToastContainer } from "react-toastify";
 
 const Main = () => {
   const images = [
@@ -60,10 +64,12 @@ const Main = () => {
     })
   );
 
+  // Drag start function
   const handleDragStart = useCallback((e) => {
     setActiveId(e.active.id);
   }, []);
 
+  // Drag end function
   const handleDragEnd = useCallback((e) => {
     const { active, over } = e;
     if (active.id !== over?.id) {
@@ -76,18 +82,39 @@ const Main = () => {
     setActiveId(null);
   }, []);
 
+  // Drag Cancle function
   const handleDragCancel = useCallback(() => {
     setActiveId(null);
   }, []);
 
+  // Delete images function
   const handleDeleteImage = () => {
-    const filteredImages = items.filter((item) => !deleteImg.includes(item));
-    setDeleteImg([]);
-    setItems(filteredImages);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't to Delelte all images!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const filteredImages = items.filter(
+          (item) => !deleteImg.includes(item)
+        );
+        setDeleteImg([]);
+        setItems(filteredImages);
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+      }
+    });
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-6 bg-white rounded-md">
+    <div className="max-w-5xl lg:mx-auto m-3 lg:mt-6 bg-white rounded-md">
       {/* Main container start */}
       <div>
         {/* Header div start */}
@@ -95,9 +122,16 @@ const Main = () => {
           {deleteImg.length === 0 ? (
             <h2 className="text-2xl font-bold">Gallery Master</h2>
           ) : (
-            <h2 className="text-2xl font-bold">
-              Select Images: {deleteImg.length}
-            </h2>
+            <div className="flex gap-2 items-center">
+              <img
+                className="border-2 mt-1 border-[gray] rounded bg-[#0000ffd6]"
+                src={success}
+                alt=""
+              />
+              <h2 className="text-2xl font-bold">
+                Select Images: {deleteImg.length}
+              </h2>
+            </div>
           )}
           <button
             onClick={handleDeleteImage}
@@ -121,7 +155,7 @@ const Main = () => {
             <SortableContext items={items} strategy={rectSortingStrategy}>
               {items?.length !== 0 ? (
                 <div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 mx-auto gap-5 px-[110px] py-7">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 mx-auto gap-5 p-[37px] lg:px-[110px] lg:py-7">
                     {items.map((id, index) => {
                       return (
                         <Card
@@ -134,7 +168,7 @@ const Main = () => {
                       );
                     })}
                     <div className="w-[144px] flex flex-col gap-2 rounded-[10px] cursor-pointer border-2 border-dashed border-slate-300 justify-center items-center h-[144px] bg-slate-100">
-                      <img className="w-8 h-8" src={image1} alt="" />
+                      <img className="w-8 h-8" src={gallery} alt="" />
                       <h4>Add Images</h4>
                     </div>
                   </div>
@@ -151,6 +185,7 @@ const Main = () => {
         {/* Callery containers end */}
       </div>
       {/* Main container end */}
+      <ToastContainer />
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import { Checkbox } from "@nextui-org/react";
 import { forwardRef, useEffect, useState } from "react";
-
 import "./item.css";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const Item = forwardRef(
   (
@@ -24,6 +25,7 @@ const Item = forwardRef(
       setSeleted(deleteImg?.includes(id));
     }, [deleteImg, id]);
 
+    // Delete image function
     const handleDeletedImages = () => {
       const updatedDeletedImg = [...deleteImg];
       const isCurrentlySelected = updatedDeletedImg?.includes(id);
@@ -36,8 +38,32 @@ const Item = forwardRef(
 
       setDeleteImg(updatedDeletedImg);
       setSeleted(!isCurrentlySelected);
+      if (seleted) {
+        toast.error("Images unselected!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.success(" Images select successful !", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
     };
 
+    // Inline style
     const inlineStyle = {
       opacity: withOpacity ? "0.5" : "1",
       transformOrigin: "0% 0%",
@@ -60,8 +86,6 @@ const Item = forwardRef(
       ...style,
     };
 
-    console.log(seleted, 63);
-
     return (
       <>
         <div
@@ -75,24 +99,29 @@ const Item = forwardRef(
           }`}
         >
           <img className={`rounded-[12px]`} src={id} alt="" />
-
           <Checkbox
             isSelected={seleted}
-            name={id}
+            name={name}
             id={id}
             className={`absolute top-2 left-2 ${seleted ? "selectedImg" : ""} ${
               hoverd ? "" : "md:hidden"
-            } border-2 border-[gray] rounded-lg ${
-              seleted ? "bg-[blue] text-white" : "bg-white"
-            } h-[20px] w-[20px]`}
+            } border-2 border-[gary] rounded ${
+              seleted ? "bg-[#0000ffd6] text-white" : "bg-white"
+            } h-[18px] w-[18px] z-50`}
             onValueChange={handleDeletedImages}
-          ></Checkbox>
+          />
+
           {hoverd && (
             <>
               <div
-                className={`absolute ${
-                  index === 0 ? "hidden" : ""
-                } rounded-[10px] inset-0  bg-[#363636ae] pointer-events-none z-10`}
+                className={`absolute  rounded-[10px] inset-0  bg-[#363636ae] pointer-events-none z-10`}
+              ></div>
+            </>
+          )}
+          {seleted && (
+            <>
+              <div
+                className={`absolute  rounded-[10px] inset-0  bg-[#cecece84] pointer-events-none z-10`}
               ></div>
             </>
           )}

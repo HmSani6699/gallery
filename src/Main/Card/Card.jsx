@@ -3,7 +3,6 @@ import { CSS } from "@dnd-kit/utilities";
 import Item from "../../Component/Item";
 
 const Card = (props) => {
-  console.log(props);
   const {
     isDragging,
     attributes,
