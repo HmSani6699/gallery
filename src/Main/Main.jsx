@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 // Card import start //
 import image1 from "../../public/images/image-1.webp";
@@ -15,8 +15,20 @@ import image11 from "../../public/images/image-11.jpeg";
 // Card import end //
 
 // React Dnd kit import start //
-import { DndContext, DragOverlay } from "@dnd-kit/core";
-import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  DragOverlay,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
 import Card from "./Card/Card";
 import Item from "../Component/Item";
 
@@ -39,21 +51,73 @@ const Main = () => {
   const [deleteImg, setDeleteImg] = useState([]);
   const [activeId, setActiveId] = useState([]);
 
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragStart = useCallback((e) => {
+    setActiveId(e.active.id);
+  }, []);
+
+  const handleDragEnd = useCallback((e) => {
+    const { active, over } = e;
+    if (active.id !== over?.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active?.id);
+        const newIndex = items.indexOf(over?.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+    setActiveId(null);
+  }, []);
+
+  const handleDragCancel = useCallback(() => {
+    setActiveId(null);
+  }, []);
+
+  const handleDeleteImage = () => {
+    const filteredImages = items.filter((item) => !deleteImg.includes(item));
+    setDeleteImg([]);
+    setItems(filteredImages);
+  };
+
   return (
     <div className="max-w-5xl mx-auto mt-6 bg-white rounded-md">
       {/* Main container start */}
       <div>
         {/* Header div start */}
         <div className="flex items-center justify-between px-5 pt-3.5">
-          <h2 className="text-2xl font-bold">Gallery Master</h2>
-          <button className="text-red-600 font-semibold ">Delete Image</button>
+          {deleteImg.length === 0 ? (
+            <h2 className="text-2xl font-bold">Gallery Master</h2>
+          ) : (
+            <h2 className="text-2xl font-bold">
+              Select Images: {deleteImg.length}
+            </h2>
+          )}
+          <button
+            onClick={handleDeleteImage}
+            className="text-red-600 font-semibold "
+          >
+            Delete{" "}
+          </button>
         </div>
         <div className="border-[1.5px] mt-5"></div>
         {/* Header div end */}
 
         {/* Callery containers start */}
         <div>
-          <DndContext>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
             <SortableContext items={items} strategy={rectSortingStrategy}>
               {items?.length !== 0 ? (
                 <div>

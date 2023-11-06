@@ -1,4 +1,7 @@
+import { Checkbox } from "@nextui-org/react";
 import { forwardRef, useEffect, useState } from "react";
+
+import "./item.css";
 
 const Item = forwardRef(
   (
@@ -22,16 +25,17 @@ const Item = forwardRef(
     }, [deleteImg, id]);
 
     const handleDeletedImages = () => {
-      const updadeDeleteImg = [...deleteImg];
-      const isCurrentSelected = updadeDeleteImg?.includes(id);
-      if (isCurrentSelected) {
-        updadeDeleteImg?.splice(updadeDeleteImg?.indexOf(id), 1);
+      const updatedDeletedImg = [...deleteImg];
+      const isCurrentlySelected = updatedDeletedImg?.includes(id);
+
+      if (isCurrentlySelected) {
+        updatedDeletedImg?.splice(updatedDeletedImg?.indexOf(id), 1);
       } else {
-        updadeDeleteImg?.push(id);
+        updatedDeletedImg?.push(id);
       }
 
-      setDeleteImg(updadeDeleteImg);
-      setSeleted(!isCurrentSelected);
+      setDeleteImg(updatedDeletedImg);
+      setSeleted(!isCurrentlySelected);
     };
 
     const inlineStyle = {
@@ -56,10 +60,13 @@ const Item = forwardRef(
       ...style,
     };
 
+    console.log(seleted, 63);
+
     return (
       <>
         <div
           ref={ref}
+          {...props}
           style={inlineStyle}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
@@ -67,7 +74,28 @@ const Item = forwardRef(
             seleted ? "border-2 border-red-500" : ""
           }`}
         >
-          <img className="rounded-[12px]" src={id} alt="" />
+          <img className={`rounded-[12px]`} src={id} alt="" />
+
+          <Checkbox
+            isSelected={seleted}
+            name={id}
+            id={id}
+            className={`absolute top-2 left-2 ${seleted ? "selectedImg" : ""} ${
+              hoverd ? "" : "md:hidden"
+            } border-2 border-[gray] rounded-lg ${
+              seleted ? "bg-[blue] text-white" : "bg-white"
+            } h-[20px] w-[20px]`}
+            onValueChange={handleDeletedImages}
+          ></Checkbox>
+          {hoverd && (
+            <>
+              <div
+                className={`absolute ${
+                  index === 0 ? "hidden" : ""
+                } rounded-[10px] inset-0  bg-[#363636ae] pointer-events-none z-10`}
+              ></div>
+            </>
+          )}
         </div>
       </>
     );
